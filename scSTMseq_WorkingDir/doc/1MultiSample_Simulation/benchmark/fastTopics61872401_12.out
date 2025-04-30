@@ -1,0 +1,10 @@
+Design is nSample10_nCellType10_Batch_CancerCell 
+Dir is /work/users/e/u/euphyw/scLDAseq/data/simulation/1MultiSample/SingleResponse/nSample10_nCellType10_Batch_CancerCell 
+sims_1740763287_NullModel.rds 
+Initializing factors using Topic SCORE algorithm.
+Initializing loadings by running 10 SCD updates.
+Fitting rank-10 Poisson NMF to 5000 x 2994 dense matrix.
+Running at most 100 EM updates, without extrapolation (fastTopics 0.6-192).
+Refining model fit.
+Fitting rank-10 Poisson NMF to 5000 x 2994 dense matrix.
+Running at most 100 SCD updates, with extrapolation (fastTopics 0.6-192).

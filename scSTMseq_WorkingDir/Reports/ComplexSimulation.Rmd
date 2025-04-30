@@ -1,0 +1,363 @@
+---
+title: "ComplexSimulation"
+output: html_document
+date: "2024-12-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(MASS)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(SingleCellExperiment)
+library(MANOVA.RM)
+library(tibble)
+library(tidyverse)
+library(limma)
+library(mclust)
+```
+
+## Proportion Difference by Simulations
+
+In this section, I am providing 4 examples of simulation. Those simulation were simulated with only one response group, but with batch effect and cancer-like cell group. All simulations have moderate to high $\gamma \sim N(0,1)$. Note under the perfect ARI scenario, we only need sd = 0.3 to achieve power \> 90%. Thus, sd = 1 simulates $\gamma$ with higher absolute values. The following simulations do not give the perfect ARI.
+
+theta matrix is the inferred cell-by-topic proportion matrix from scSTMseq. In the following section, "summing" refers to adding each column of the theta matrix by sample, followed by normalization. "Max" refers to assigning a deterministic topic label to each cell by taking the maximum of each row.
+
+```{r, warning=F, message=FALSE, results = 'hide'}
+setwd("/proj/milovelab/wu/scLDAseq")
+dir <- "/work/users/e/u/euphyw/scLDAseq/data/simulation/1MultiSample/SingleResponse/"
+design <- "nSample20_nCellType10_Batch_CancerCell/"
+scSTM <- "scSTM_Pooled_Content_Sample_Prevalence_Time/"
+path = paste0(dir, design, scSTM)
+files <- list.files(path)
+
+r.file <- paste0("R/",list.files("R/"))
+sapply(r.file, source)
+
+name <- c("scSTM_1732766297_HighVar1.rds", "scSTM_1732766292_HighVar1.rds", # not significant
+          "scSTM_1732766283_HighVar1.rds", "scSTM_1732766268_HighVar1.rds") # significant
+files <- files[which(files %in% name)]
+```
+
+Create a function to conveniently calculate the following:
+
+1.  ARI
+
+2.  MANOVA.RM Results
+
+3.  Proportion difference between timepoints for inferred clusters, averaged across all samples
+
+4.  Proportion difference between timepoints for simulated data, averaged across all samples
+
+5.  Plot of proportion difference for each replicate by summing, difference using max proportion (use to calculate ARI), and the true proportion difference. In the plot, the grey represents the proportion difference for each replicate using "summing". Blue dot is the true proportion difference, and red dot is the proportion difference using "max".
+
+```{r, echo = F}
+prop_diff <- function(scSTMobj, nsims = 5){
+  # select top scSTMobj
+  model <- select_top_scSTM(scSTMobj)
+  # perform Manova.RM
+  PosteriorRep <- PosteriorPropRep(model = model, nsims = nsims, Sample = "Sample", Time = "Time", Group = NULL)
+  Manova.res <- ThetaManova(PosteriorRep, Time = "Time", Group = NULL, use_mean = F)
+  metadata <- colData(model$settings$sce) %>% as.data.frame() %>% dplyr::select(Cell, Sample, Time, Response)
+  
+  # calculate proportion difference for scSTMseq
+  collaposed.diff <- lapply(PosteriorRep, function(x){
+    # take difference between timepoints
+    diff <- x %>%
+      group_by(Sample) %>%
+      summarise(across(starts_with("V"), ~ .[Time == "Time2"] - .[Time == "Time1"]), .groups = 'drop') %>%
+      summarise(across(starts_with("V"), mean), .groups = 'drop')
+    return(diff)
+  })
+  
+  #### simulation difference
+  metadata <- colData(model$settings$sce) %>% as.data.frame() 
+  
+  group_proportions <- metadata %>%
+    group_by(Sample, Time, Response, Group) %>%
+    summarise(count = n(), .groups = 'drop') %>%
+    group_by(Sample, Time) %>%
+    mutate(group_proportion = count / sum(count)) %>%
+    ungroup()
+  
+  proportion_differences <- group_proportions %>%
+    pivot_wider(
+      names_from = Group,
+      values_from = group_proportion) %>% 
+    group_by(Sample, Time, Response) %>%
+    summarise(
+      across(starts_with("Group"), ~ sum(.x, na.rm = TRUE)),
+      .groups = "drop"
+    )
+  
+  mean_diff <- proportion_differences %>%
+    group_by(Sample, Response) %>%
+    summarise(across(starts_with("Group"), ~ .[Time == "Time2"] - .[Time == "Time1"]), .groups = 'drop') %>%
+    group_by(Response) %>%
+    summarise(across(starts_with("Group"), mean), .groups = 'drop')
+  
+  # ARI
+  pooled_cluster <- cluster_scSTM(model)
+  metadata$Cluster <- pooled_cluster[match(rownames(metadata), names(pooled_cluster))]
+  adjusted_rand_indices <- sapply(metadata %>% dplyr::select(ends_with("Cluster")), function(x) {
+    adjustedRandIndex(x, metadata$Group)
+  })
+  
+  # fit MAnova.rm using max cluster data
+  max_proportions <- metadata %>%
+    group_by(Sample, Time, Response, Cluster) %>%
+    summarise(count = n(), .groups = 'drop') %>%
+    group_by(Sample, Time) %>%
+    mutate(proportion = count / sum(count)) %>%
+    ungroup() %>%
+    dplyr::select(-count) %>%
+    pivot_wider(names_from = Cluster, values_from = proportion, values_fill = 0)
+
+  meta <- max_proportions %>% dplyr::select(!starts_with("topic"))
+  cluster <- max_proportions %>% dplyr::select(starts_with("topic"))
+
+  cluster <- compositions::ilr(cluster)
+  colnames(cluster) <- paste0("topic", 1:ncol(cluster))
+  data <- cbind(meta, cluster)
+  ##### Fit Manova.RM #######
+  response_vars <- grep("^topic", colnames(data), value = TRUE)
+  fit <- multRM(as.formula(paste0("cbind(", paste(response_vars, collapse = ", "), ") ~ Time")),
+              data = data, subject = "Sample", within = "Time", iter = 1000)
+  
+#### plot difference between sum and max ###
+max_proportions_long <- max_proportions %>%
+  group_by(Sample) %>%
+  summarise(across(starts_with("topic"), ~ .[Time == "Time2"] - .[Time == "Time1"]), .groups = 'drop') %>%
+  pivot_longer(cols = starts_with("topic_"), names_to = "Topic", values_to = "Proportion") %>%
+  # select(Sample, Time, Topic, Proportion) %>%
+  select(Sample, Topic, Proportion) %>%
+  mutate(Source = "Max")
+
+topic_group <- OneToOne_Mapping_Topics(model)
+true_proportions_long <- proportion_differences %>%
+  group_by(Sample) %>%
+  summarise(across(starts_with("Group"), ~ .[Time == "Time2"] - .[Time == "Time1"]), .groups = 'drop') %>%
+  pivot_longer(cols = starts_with("Group"), names_to = "Group", values_to = "Proportion") %>%
+  # select(Sample, Time, Group, Proportion) %>%
+  select(Sample, Group, Proportion) %>%
+  mutate(Source = "Truth")
+true_proportions_long$Topic <- topic_group$Topic[match(true_proportions_long$Group, topic_group$Group)]
+true_proportions_long <- true_proportions_long %>% dplyr::select(-Group)
+
+names(PosteriorRep) <- paste0("Replicate", 1:length(PosteriorRep))
+inferred_proportion <- lapply(names(PosteriorRep), function(name){
+  rep <- PosteriorRep[[name]]
+  colnames(rep) <- c("Sample", "Time", paste0("topic_",1:10))
+  rep <- rep %>%
+    group_by(Sample) %>%
+  summarise(across(starts_with("topic_"), ~ .[Time == "Time2"] - .[Time == "Time1"]), .groups = 'drop') %>%
+  pivot_longer(cols = starts_with("topic_"), names_to = "Topic", values_to = "Proportion") %>%
+  # select(Sample, Time, Topic, Proportion) %>%
+    select(Sample, Topic, Proportion) %>%
+  mutate(Source = name)
+  return(rep)
+})
+
+inferred_proportion <- do.call(rbind, inferred_proportion)
+p <- ggplot() +
+  # Plot replicate range as bars
+  # geom_linerange(data = inferred_proportion,
+  #                aes(x = Sample, ymin = min(Proportion), ymax = max(Proportion), group = Source, color = "Replicates Range"),
+  #                alpha = 0.8) +
+    geom_point(data = inferred_proportion,
+              aes(x = Sample, y = Proportion, group = Source, color = "Replicates Range"),
+             size = 2) +
+  # Highlight maximum proportions
+  geom_point(data = max_proportions_long,
+             aes(x = Sample, y = Proportion, color = "Max Proportion"),
+             size = 2) +
+  # True estimates
+  geom_point(data = true_proportions_long,
+             aes(x = Sample, y = Proportion, color = "True Proportion"),
+             size = 2) +
+  # facet_wrap(Topic ~ Time, scales = "free_x") +
+   facet_wrap(~Topic, scales = "free_x") +
+  theme_minimal() +
+  labs(
+    title = "Replicate Range with Max Proportions and True Proportion Highlighted",
+    x = "Sample",
+    y = "Proportion",
+    color = "Legend"
+  ) +
+  scale_color_manual(
+    values = c("Replicates Range" = "grey", "Max Proportion" = "red", "True Proportion" = "blue"),
+    labels = c("Max Proportion", "Replicates Range", "True Proportion")
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom")
+
+
+  return(list(ARI = adjusted_rand_indices,
+              MANOVA = Manova.res,
+              scSTM_diff = collaposed.diff,
+              sims_diff = mean_diff,
+              sim_manova = fit,
+              plot = p))
+}
+
+```
+
+Run the above function through each of the 4 examples
+
+```{r, eval=FALSE}
+res <- lapply(files, function(file){
+  scSTMobj <- readRDS(paste0(path, file))
+  prop_diff(scSTMobj, nsims = 5)
+})
+saveRDS(res, file = "test.rds")
+```
+
+```{r, echo=FALSE}
+setwd("/proj/milovelab/wu/scLDAseq")
+res <- readRDS("test.rds")
+```
+
+## Results
+
+It is hard to identify any clear trend between the inferred difference (grey dots) and the truth (blue dots). When there exists significant proportion change, it seems the grey dots are more variable. It is obvious that using "max" gives a better proportion difference estimates, closer to the truth. Note that the matching between inferred topic and simulated truth is not 1-1. Topics were matched to the simulated group with the highest possibility.
+
+### Simulation Example 1
+
+ARI is 0.978, which is fairly high. The resampling p-values show that there exists significant proportion changes. In simulation, the highest change is Group 3, at 0.245, where the inferred clustering only have the highest difference at 0.09.
+
+```{r}
+a <- res[[2]]
+a$ARI
+manova.res <- lapply(a$MANOVA, function(rep){
+  x <- rep$Interaction
+  x$resampling
+})
+manova.res <- do.call(rbind, manova.res)
+rownames(manova.res) <- paste0("Replicate", 1:nrow(manova.res))
+manova.res
+```
+
+#### Proportion Difference from scSTMseq
+
+```{r}
+bind_rows(a$scSTM_diff)
+```
+
+#### Proportion Difference from Truth
+
+```{r}
+a$sims_diff
+```
+
+#### Visualization
+
+```{r, fig.width=14, fig.height=15}
+a$plot
+
+```
+
+### Simulation Example 2
+
+ARI is 0.91. The resampling p-values are boardline significant. In simulation, the highest change at 0.15, where the inferred clustering only have the highest difference at -0.03, which is lower than the previous example.
+
+```{r}
+a <- res[[1]]
+a$ARI
+manova.res <- lapply(a$MANOVA, function(rep){
+  x <- rep$Interaction
+  x$resampling
+})
+manova.res <- do.call(rbind, manova.res)
+rownames(manova.res) <- paste0("Replicate", 1:nrow(manova.res))
+manova.res
+```
+
+#### Proportion Difference from scSTMseq
+
+```{r}
+bind_rows(a$scSTM_diff)
+```
+
+#### Proportion Difference from Truth
+
+```{r}
+a$sims_diff
+```
+
+#### Visualization
+
+```{r, fig.width=14, fig.height=15}
+a$plot
+```
+
+### Simulation Example 3
+
+ARI is 0.878, slightly lower than before. The proportion test showed insignificant results. The true difference was not as pronounced as the previous two simulations, which could contribute to the insignificiant results, in addition to the slighly lower ARI.
+
+```{r}
+a <- res[[3]]
+a$ARI
+manova.res <- lapply(a$MANOVA, function(rep){
+  x <- rep$Interaction
+  x$resampling
+})
+manova.res <- do.call(rbind, manova.res)
+rownames(manova.res) <- paste0("Replicate", 1:nrow(manova.res))
+manova.res
+```
+
+#### Proportion Difference from scSTMseq
+
+```{r}
+bind_rows(a$scSTM_diff)
+```
+
+#### Proportion Difference from Truth
+
+```{r}
+a$sims_diff
+```
+
+#### Visualization
+
+```{r, fig.width=14, fig.height=15}
+a$plot
+```
+
+### Simulation Example 4
+
+ARI is 0.958, and the proportion change is not significant.
+
+```{r}
+a <- res[[4]]
+a$ARI
+manova.res <- lapply(a$MANOVA, function(rep){
+  x <- rep$Interaction
+  x$resampling
+})
+manova.res <- do.call(rbind, manova.res)
+rownames(manova.res) <- paste0("Replicate", 1:nrow(manova.res))
+manova.res
+```
+
+#### Proportion Difference from scSTMseq
+
+```{r}
+bind_rows(a$scSTM_diff)
+```
+
+#### Proportion Difference from Truth
+
+```{r}
+a$sims_diff
+```
+
+#### Visualization
+
+```{r, fig.width=14, fig.height=15}
+a$plot
+```

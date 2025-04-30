@@ -1,0 +1,134 @@
+---
+title: "PosteriorEta"
+author: "Euphy Wu"
+date: "2024-10-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this document, I focus on three key steps, each demonstrated with simple code:
+
+1. Draw samples from the posterior distribution of $\eta$
+2. Plot a histogram of the posterior draws of $\eta$
+3. Plot a histogram of the $\Gamma$ estimates using the drawn $\eta$ values, fitted with a mixed linear regression model
+
+As an example, I use a previously fitted model with 3 samples, each exhibiting changes in cell type proportions between time points. The dataset consists of a total of 5 distinct cell types.
+
+## Draw From Posterior Distribution of Eta
+
+```{r, echo = FALSE}
+dir = "/work/users/e/u/euphyw/scLDAseq/data/simulation/MultiSample_LogisticNormal/NormalGamma_SingleResponse/nSample3_nCellType5_Batch_StromalCell"
+files = list.files(paste0(dir, "/scSTM_LinearMixed_Content_Sample_Prevalence_TimeandResponse"), pattern = "HighVar")
+model = readRDS(paste0(dir, "/scSTM_LinearMixed_Content_Sample_Prevalence_TimeandResponse/", files[1]))
+```
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE, results = 'hide', include = FALSE}
+library(MASS)
+library(dplyr)
+library(tidyverse)
+library("scater")
+library(SingleCellExperiment)
+setwd("/proj/milovelab/wu/scLDAseq")
+r.file <- paste0("R/",list.files("R/"))
+sapply(r.file, source)
+model <- select_top_scSTM(model)
+```
+
+The posterior distribution $\eta_{l,k} \sim N(\lambda_{l,k}, nu^2_{l,k})$, where $l$ is cell and $k$ is topic/cell type. Draw $100$ replicates for each cell from the posterior distributions. `model` is the previously run scSTMseq model object.
+```{r}
+lambda <- model$eta # mean of eta
+nu <- model$nu # variance of eta
+nsims <- 100 # number of posterior draw
+
+out <- vector("list", nrow(lambda))
+# for each cell ,draw from the posterior distribution 
+for (i in seq_len(nrow(lambda))) {
+  sigma <- nu[[i]]
+  lambda_i <- lambda[i,]
+  out[[i]] <- mvrnorm(nsims, mu = lambda_i, Sigma = sigma) # draw from the posterior distribution of eta
+}
+names(out) <- rownames(lambda)
+```
+
+## Histogram of the posterior draw of Eta
+
+We first look at the histogram of the distribution of posterior draw of $\eta$ for one single sample, for topic 1 at time 1 only. That gives us 497 cells, each with 100 replicates of eta.
+```{r }
+# first extract all cells that belongs to sample 1 at time 1
+metaset <- colData(model$settings$sce) %>%
+  as.data.frame() %>%
+  dplyr::filter(Sample == "Sample1" & Time == "Time1")
+
+# matching the above cells with the posterior draw in the previous step
+PosteriorEta <- out[metaset$Cell]
+PosteriorEta <- do.call(rbind, PosteriorEta)
+# plotting only topic 1
+hist(PosteriorEta[,1], main = "Histogram of Posterior Draw of Eta for Sample 1, Topic 1 at Time1", xlab = "Posterior Eta For Topic 1")
+```
+
+Then we look at a violin plot for the same posterior $\eta$ distribution, across all three samples, at both time points, for topic 1 only. The estimated $\eta$ from the model was mapped in red. The underlying simulation has decreasing cell type 1 between time points for sample 2 and 3, but increasing cell type 1 for sample 1.
+```{r}
+estimateEta <- model$eta[,1] 
+PosteriorEta_G1 <- lapply(out, function(x) x[, 1])
+PosteriorEta_G1 <- data.frame(Cell = names(PosteriorEta_G1), Value = unlist(PosteriorEta_G1))
+metadata <- colData(model$settings$sce) %>%
+  as.data.frame() %>%
+  select(Cell, Time, Sample)
+metadata$estimateEta <- estimateEta
+# align posterior replicates with their Sample and Timepoint information
+plot_data <- PosteriorEta_G1 %>% left_join(metadata, by = "Cell")
+
+ggplot(plot_data, aes(x = interaction(Sample, Time), y = Value, fill = factor(Sample))) +
+  geom_violin(trim = FALSE) +
+  theme_bw() +
+  geom_point(aes(y = estimateEta), color = "red", size = 1) + 
+  labs(x = "Sample and Timepoint", y = "Distribution of Posterior Eta", 
+       title = "Violin Plot of Posterior Eta Replicates by Sample and Timepoint") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Histogram of the estimation of Gamma with sampled Eta
+`SimEta` contains posterior draw of all the cells in the dataset, and we have `nsims = 100` such draw. 
+
+One such draw looks like the following 
+
+|        | Topic1 | Topic2 | Topic3 | Topic4 |
+|--------|--------|--------|--------|--------|
+| Cell1  |  1.2   |  -0.3   |  0.5   |  5.1   |
+| Cell2  |  3.4   |  1.5    |  -6.2   |  1.3   |
+| ...    |  ...   | ...    | ...    | ...   |
+| CellN  |  -0.5   |  0.2   |  3.1   |  -9.2   |
+
+For each complete posterior draw, we can fit a mixed linear regression for a given topic,. For example, fitting a mixed linear model for topic 1, the response variable is the first column in the above matrix. Repeat this step for all 100 replicates.
+```{r, eval = FALSE}
+lmer.formula = ~Time + (1|Sample) # mixed linear model formula
+for(i in 1:length(SimEta)){ # model fitting for each posterior dataset
+  Y_all <- SimEta[[i]] 
+  res <- data.frame()
+  for (k in seq_len(ncol(Y_all))) { # one mixed regression for each topic
+    lm.model.temp <- lme4::lmer(lmer.formula, data = X)
+    temp.res <- summary(lm.model.temp)$coefficients[,"Estimate"] # extract the estimation of gamma
+    res <- rbind(res, temp.res)
+  }
+  gamma[[i]] <-  res
+}
+```
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, results = 'hide', include = FALSE}
+formula = ~Time + (1|Sample) # mixed linear model formula
+res <- GammaError(model, formula = formula, nsims = 100)
+gamma <- res$EstGamma
+```
+
+From the above analysis, we get 100 estimated $\Gamma$ for each topic, in addition to the one estimated $\Gamma$ from the model. We can pthen lot the distribution of estimated $\Gamma$ fitted using mixed linear model with the posterior eta replicates as response variables, where the estimated $\Gamma$ from the model was highlighted in red.
+```{r}
+gamma_topic1 <- lapply(gamma, function(x) x["topic_1", "TimeTime2"])
+gamma_topic1 <- do.call(c, gamma_topic1)
+estimated_gamma <- model$mu$gamma["TimeTime2", 1]
+hist(gamma_topic1, main = "Distribution of Gamma Estimated Fitted with Posterior Eta for Topic 1")
+abline(v = estimated_gamma, col = "red", lwd = 2)
+```
+With the series of $\Gamma$, I can proceed to implement approaches similar to what Scott has previous worked on. 

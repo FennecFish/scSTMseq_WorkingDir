@@ -1,0 +1,326 @@
+WARNING: ignoring environment value of R_HOME
+Design is nSample10_nCellType8_noBatch_CancerCell 
+Dir is /work/users/e/u/euphyw/scLDAseq/data/simulation/1MultiSample/SingleResponse/nSample10_nCellType8_noBatch_CancerCell 
+sims_1733584931_NullModel.rds 
+Number of Iteration is 2 with num.init 30 
+        R/alignCorpus.R R/asSTMCorpus.R R/checkBeta.R R/cloud.R
+value   ?               ?               ?             ?        
+visible FALSE           FALSE           FALSE         FALSE    
+        R/CompositionChange.R R/convertCorpus.R R/dataGen.R R/estimateEffect.R
+value   ?                     ?                 ?           ?                 
+visible FALSE                 FALSE             FALSE       FALSE             
+        R/estimateMixedEffect.R R/etaPosterior.R R/exclusivity.R
+value   ?                       ?                ?              
+visible FALSE                   FALSE            FALSE          
+        R/findThoughts.R R/findTopic.R R/fitNewDocuments.R R/GammaError.R
+value   ?                ?             ?                   ?             
+visible FALSE            FALSE         FALSE               FALSE         
+        R/gammaPosterior.R R/heldout.R R/jeffreyskappa.R R/labelTopics.R
+value   ?                  ?           ?                 ?              
+visible FALSE              FALSE       FALSE             FALSE          
+        R/makeDesignMatrix.R R/manyTopics.R R/multiSTM.R R/optimalK.R
+value   ?                    ?              ?            ?           
+visible FALSE                FALSE          FALSE        FALSE       
+        R/permute.R R/plot.estimateEffect.R R/plot.fixedEffect.R
+value   ?           ?                       ?                   
+visible FALSE       FALSE                   FALSE               
+        R/plot.searchK.R R/plot.STM.R R/plotModels.R R/plotQuote.R
+value   ?                ?            ?              ?            
+visible FALSE            FALSE        FALSE          FALSE        
+        R/plotRemoved.R R/plottingutilfns.R R/plotTopicLoess.R
+value   ?               ?                   ?                 
+visible FALSE           FALSE               FALSE             
+        R/prepDocuments.R R/prepsce.R R/produce_cmatrix.R R/RcppExports.R
+value   ?                 ?           ?                   ?              
+visible FALSE             FALSE       FALSE               FALSE          
+        R/readCorpus.R R/residuals.R R/s.R R/sageLabels.R R/scSTM.R
+value   ?              ?             ?     ?              ?        
+visible FALSE          FALSE         FALSE FALSE          FALSE    
+        R/selectModel_parallel.R R/selectModel.R R/semanticCoherence.R
+value   ?                        ?               ?                    
+visible FALSE                    FALSE           FALSE                
+        R/simBetas.R R/spectral.R R/stm-package.R R/stm.control.R R/STMbound.R
+value   ?            ?            NULL            ?               ?           
+visible FALSE        FALSE        TRUE            FALSE           FALSE       
+        R/STMconvergence.R R/STMestep.R R/STMfunctions.R R/STMinit.R
+value   ?                  ?            ?                ?          
+visible FALSE              FALSE        FALSE            FALSE      
+        R/STMinitLikelihood.R R/STMlncpp.R R/STMmnreg.R R/STMmu.R
+value   ?                     ?            ?            ?        
+visible FALSE                 FALSE        FALSE        FALSE    
+        R/STMoptbeta.R R/STMreport.R R/STMsigma.R R/STMsigs.R R/STMsubset.R
+value   ?              ?             ?            ?           ?            
+visible FALSE          FALSE         FALSE        FALSE       FALSE        
+        R/structure_plot.R R/summary.STM.R R/tau.R R/textProcessor.R
+value   ?                  ?               ?       ?                
+visible FALSE              FALSE           FALSE   FALSE            
+        R/ThetaManova.R R/thetaPosterior.R R/toLDAvis.R R/topicCorr.R
+value   ?               ?                  ?            ?            
+visible FALSE           FALSE              FALSE        FALSE        
+        R/topicLasso.R R/topicQuality.R R/useful_functions.R R/writeLdac.R
+value   ?              ?                ?                    ?            
+visible FALSE          FALSE            FALSE                FALSE        
+        R/zzz.R
+value   ?      
+visible FALSE  
+starting worker pid=3078768 on localhost:11159 at 09:53:50.052
+starting worker pid=3078773 on localhost:11159 at 09:53:50.103
+starting worker pid=3078767 on localhost:11159 at 09:53:50.124
+starting worker pid=3078769 on localhost:11159 at 09:53:50.127
+starting worker pid=3078770 on localhost:11159 at 09:53:50.132
+starting worker pid=3078772 on localhost:11159 at 09:53:50.134
+starting worker pid=3078766 on localhost:11159 at 09:53:50.177
+starting worker pid=3078765 on localhost:11159 at 09:53:50.177
+starting worker pid=3078771 on localhost:11159 at 09:53:50.190
+starting worker pid=3078764 on localhost:11159 at 09:53:50.193
+Casting net 
+Initialization with topicScore. 
+Initialization with topicScore. 
+Initialization with topicScore. 
+Initialization with topicScore. 
+Initialization with topicScore. 
+Initialization with topicScore. 
+Initialization with topicScore. 
+Initialization with topicScore. 
+Initialization with topicScore. 
+Initialization with topicScore. 
+.........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+..Completed E-Step (36 seconds). 
+........Completed M-Step (0 seconds). 
+..calculate log likelihood 
+....Completing Iteration 1 (approx. per word bound = -20.203) 
+..................................................................
+.Completed E-Step (37 seconds). 
+......
+.Completed E-Step (37 seconds). 
+...Completed M-Step (0 seconds). 
+calculate log likelihood 
+....Completing Iteration 1 (approx. per word bound = -20.203) 
+.Completed M-Step (0 seconds). 
+calculate log likelihood 
+.......Completing Iteration 1 (approx. per word bound = -20.203) 
+........
+Completed E-Step (37 seconds). 
+..................Completed M-Step (0 seconds). 
+.calculate log likelihood 
+.......Completing Iteration 1 (approx. per word bound = -20.203) 
+......................................................................
+.Completed E-Step (39 seconds). 
+...............
+.Completed E-Step (38 seconds). 
+..Completed M-Step (0 seconds). 
+....calculate log likelihood 
+.......Completing Iteration 1 (approx. per word bound = -20.203) 
+........Completed M-Step (0 seconds). 
+.....calculate log likelihood 
+........Completing Iteration 1 (approx. per word bound = -20.203) 
+.................................
+.Completed E-Step (39 seconds). 
+..........................Completed M-Step (0 seconds). 
+....calculate log likelihood 
+..........Completing Iteration 1 (approx. per word bound = -20.203) 
+...................................................................
+..Completed E-Step (41 seconds). 
+.............................Completed M-Step (0 seconds). 
+...calculate log likelihood 
+................Completing Iteration 1 (approx. per word bound = -20.203) 
+...............................................................................................................................................................................................................................................
+Completed E-Step (11 seconds). 
+.....Completed M-Step (0 seconds). 
+...calculate log likelihood 
+convergence.check is 1.872011e-05 
+Model Terminated Before Convergence Reached 
+..........................................................................................
+.Completed E-Step (10 seconds). 
+.Completed M-Step (0 seconds). 
+...calculate log likelihood 
+convergence.check is 1.306294e-05 
+Model Terminated Before Convergence Reached 
+....
+Completed E-Step (10 seconds). 
+..Completed M-Step (0 seconds). 
+....calculate log likelihood 
+convergence.check is 1.233242e-05 
+Model Terminated Before Convergence Reached 
+.........................................
+Completed E-Step (10 seconds). 
+..Completed M-Step (0 seconds). 
+..calculate log likelihood 
+convergence.check is 1.469625e-05 
+Model Terminated Before Convergence Reached 
+.................................................Initialization with topicScore. 
+..................
+Completed E-Step (9 seconds). 
+.Completed M-Step (0 seconds). 
+.calculate log likelihood 
+convergence.check is 1.25307e-05 
+Model Terminated Before Convergence Reached 
+......................Initialization with topicScore. 
+...Initialization with topicScore. 
+..............................Initialization with topicScore. 
+....
+Completed E-Step (10 seconds). 
+Completed M-Step (0 seconds). 
+..calculate log likelihood 
+convergence.check is 1.070008e-05 
+Model Terminated Before Convergence Reached 
+
+Completed E-Step (12 seconds). 
+Completed M-Step (0 seconds). 
+.calculate log likelihood 
+convergence.check is 1.188519e-05 
+Model Terminated Before Convergence Reached 
+...................
+Completed E-Step (10 seconds). 
+Completed M-Step (0 seconds). 
+.calculate log likelihood 
+convergence.check is 1.264265e-05 
+Model Terminated Before Convergence Reached 
+Initialization with topicScore. 
+.........Initialization with topicScore. 
+
+Initialization with topicScore. 
+Completed E-Step (42 seconds). 
+.
+Completed E-Step (43 seconds). 
+Completed M-Step (0 seconds). 
+calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+.Completed M-Step (0 seconds). 
+.calculate log likelihood 
+..Completing Iteration 1 (approx. per word bound = -20.203) 
+...Initialization with topicScore. 
+...........................................................................................................................................................................................
+Completed E-Step (12 seconds). 
+.Completed M-Step (0 seconds). 
+calculate log likelihood 
+convergence.check is 1.331885e-05 
+Model Terminated Before Convergence Reached 
+.......
+Completed E-Step (12 seconds). 
+Completed M-Step (0 seconds). 
+calculate log likelihood 
+convergence.check is 1.404503e-05 
+Model Terminated Before Convergence Reached 
+Initialization with topicScore. 
+Initialization with topicScore. 
+........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+.Completed E-Step (38 seconds). 
+Completed M-Step (0 seconds). 
+calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+................................
+Completed E-Step (35 seconds). 
+Completed M-Step (0 seconds). 
+...calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+............................................
+Completed E-Step (38 seconds). 
+Completed M-Step (0 seconds). 
+...calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+........................................................................................................................
+....Completed E-Step (38 seconds). 
+.Completed M-Step (0 seconds). 
+calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+..........................................................
+..Completed E-Step (40 seconds). 
+..Completed M-Step (0 seconds). 
+.calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+..............................................................................................
+.Completed E-Step (37 seconds). 
+...Completed M-Step (0 seconds). 
+..calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+..........................................................................................................
+..Completed E-Step (9 seconds). 
+..Completed M-Step (0 seconds). 
+.calculate log likelihood 
+convergence.check is 1.246771e-05 
+Model Terminated Before Convergence Reached 
+.............................................................
+Completed E-Step (41 seconds). 
+.Completed M-Step (0 seconds). 
+...calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+............
+..Completed E-Step (39 seconds). 
+Completed M-Step (0 seconds). 
+.calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+..........................................................................................................................................................
+.Completed E-Step (12 seconds). 
+...Completed M-Step (0 seconds). 
+calculate log likelihood 
+convergence.check is 1.463719e-05 
+Model Terminated Before Convergence Reached 
+.....Initialization with topicScore. 
+.............
+..Completed E-Step (11 seconds). 
+Completed M-Step (0 seconds). 
+.calculate log likelihood 
+convergence.check is 1.43151e-05 
+Model Terminated Before Convergence Reached 
+........................................................................................................................................
+.Completed E-Step (10 seconds). 
+Completed M-Step (0 seconds). 
+.
+Completed E-Step (11 seconds). 
+calculate log likelihood 
+convergence.check is 1.201232e-05 
+Model Terminated Before Convergence Reached 
+.Completed M-Step (0 seconds). 
+.calculate log likelihood 
+convergence.check is 1.359934e-05 
+Model Terminated Before Convergence Reached 
+........................Initialization with topicScore. 
+................Initialization with topicScore. 
+.................................................
+Completed E-Step (11 seconds). 
+.Completed M-Step (0 seconds). 
+.calculate log likelihood 
+convergence.check is 1.395965e-05 
+Model Terminated Before Convergence Reached 
+.....................Initialization with topicScore. 
+...Initialization with topicScore. 
+............
+Completed E-Step (9 seconds). 
+.Completed M-Step (0 seconds). 
+..calculate log likelihood 
+convergence.check is 1.274437e-05 
+Model Terminated Before Convergence Reached 
+...............
+Completed E-Step (10 seconds). 
+Completed M-Step (0 seconds). 
+calculate log likelihood 
+convergence.check is 1.276069e-05 
+Model Terminated Before Convergence Reached 
+.....Initialization with topicScore. 
+.........Initialization with topicScore. 
+.....Initialization with topicScore. 
+......................................................
+Completed E-Step (41 seconds). 
+Completed M-Step (0 seconds). 
+calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+...........................
+Completed E-Step (42 seconds). 
+Completed M-Step (0 seconds). 
+.calculate log likelihood 
+Completing Iteration 1 (approx. per word bound = -20.203) 
+.............................................................................................................................................................
+Completed E-Step (12 seconds). 
+Completed M-Step (0 seconds). 
+.calculate log likelihood 
+convergence.check is 1.242655e-05 
+Model Terminated Before Convergence Reached 
+.......................
+Completed E-Step (12 seconds). 
+Completed M-Step (0 seconds). 
+calculate log likelihood 
+convergence.check is 1.366331e-05 
+Model Terminated Before Convergence Reached 
+Initialization with topicScore. 
+Initialization with topicScore. 

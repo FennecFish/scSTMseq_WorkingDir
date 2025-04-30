@@ -1,0 +1,87 @@
+---
+title: "propeller_benchmark"
+output: html_document
+date: "2024-11-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Apply Propeller to Seurat Output
+```{r,warning=F, message=F}
+library(Matrix)
+library(dplyr)
+library(scuttle)
+library(tidyverse)
+library(SingleCellExperiment)
+library(MASS)
+library(speckle)
+library(limma)
+library(CellBench)
+```
+
+Since `seurat` was run with multiple resolution, the resolution with the highest clustering accuracy was selected for downstream analysis
+```{r}
+setwd("/proj/milovelab/wu/scLDAseq")
+seurat_name <- "/work/users/e/u/euphyw/scLDAseq/data/simulation/1MultiSample/SingleResponse/nSample20_nCellType10_noBatch_StromalCell/seurat/seurat_1730958979_HighVar0.16.rds"
+sims_name <- "/work/users/e/u/euphyw/scLDAseq/data/simulation/1MultiSample/SingleResponse/nSample20_nCellType10_noBatch_StromalCell/sims/sims_1730958979_HighVar0.16.rds"
+sims <- readRDS(sims_name)
+seurat.sims <- readRDS(seurat_name)
+smeta <- seurat.sims@meta.data %>% as.data.frame()
+sub_sims <- sims[,rownames(smeta)] # filter by the rows
+seurat.adj <- sapply(smeta[,4:7], function(x) {
+  adjustedRandIndex(x, sub_sims$Group)
+})
+# select the resolution that has the highest ARI. When there are multiple, select the first one
+best_res <- names(seurat.adj)[seurat.adj == max(seurat.adj)][1]
+seurat_cluster <- seurat.sims@meta.data %>% as.data.frame() %>% dplyr::select(all_of(best_res))
+Idents(seurat.sims) = seurat_cluster$RNA_snn_res.0.5
+seurat.sims$Time <- colData(sims)$Time[match(rownames(seurat.sims@meta.data),colData(sims)$Cell)]
+seurat.sims$Sample <- colData(sims)$Sample[match(rownames(seurat.sims@meta.data),colData(sims)$Cell)]
+```
+
+Collapose the clustering information to clustering proportion by cell type and sample, for each timepoint. This follows propeller code, other than in propeller, they do not account for timepoints.
+```{r}
+clusters <- Idents(seurat.sims)
+sample <- seurat.sims$Sample
+group <- seurat.sims$Time
+
+transform="logit"
+trend=FALSE
+robust=TRUE
+tab <- table(sample, clusters, group)
+props <- apply(tab, c(1, 3), function(x) x / sum(x))
+props <- aperm(props, c(2, 1, 3)) 
+props
+```
+
+Applying logit transformation to the proportion data for each timepoint
+```{r}
+message("Performing logit transformation of proportions")
+props.pseudo <- apply(tab, c(1, 3), function(x) (x + 0.5) / sum(x + 0.5))
+props.pseudo <- aperm(props.pseudo, c(2, 1, 3)) 
+prop.trans <- log(props.pseudo/(1-props.pseudo))
+prop.trans <- rbind(prop.trans[, , 1], prop.trans[, , 2])
+sample <- rownames(prop.trans)
+colnames(prop.trans) <- paste0("Cluster", 1:ncol(prop.trans))
+prop.trans <- t(prop.trans)
+```
+
+Apply propeller to the clustering results, with sample blocks to account for random effect in samples
+```{r}
+group <- rep(c(0, 1), each = length(unique(sample)))
+design<-model.matrix(~0+factor(group))
+colnames(design) <- c("Time1", "Time2")
+corfit<-duplicateCorrelation(prop.trans,design,block=sample)
+fit<-lmFit(prop.trans,design, block=sample, correlation=corfit$consensus)
+contrasts <- makeContrasts(Time = Time2 - Time1, levels = design)
+fit.cont <- contrasts.fit(fit, contrasts = contrasts) 
+fit.cont <- eBayes(fit.cont, robust=robust, trend=trend)
+out <- as.data.frame(fit.cont)
+rownames(out) <- rownames(fit.cont$coefficients)
+out$fdr <- p.adjust(out$p.value, method="BH")
+out
+```
+
+## Apply Propeller to Seurat Output
