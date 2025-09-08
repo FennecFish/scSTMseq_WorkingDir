@@ -2,7 +2,7 @@
 # 1) compare assigned cluster from paper cluster
 # 2) changes between groups (time/expansion)
 # setwd("/proj/milovelab/wu/scLDAseq")
-setwd("/Users/Euphy/Desktop/Research/Single_Cell_Cancer/scLDAseq")
+setwd("Single_Cell_Cancer/scSTMseq_WorkingDir")
 library(Matrix)
 library(SingleCellExperiment)
 library(ggplot2)

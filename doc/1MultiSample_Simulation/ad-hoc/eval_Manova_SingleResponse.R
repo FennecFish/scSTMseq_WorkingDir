@@ -14,7 +14,7 @@ library(MANOVA.RM)
 dir <- "/users/e/u/euphyw/scSTMseq/data/simulation/1MultiSample/SingleResponse"
 # manova.dir <- "1000ManovaTheta_Pooled_noContent_Prevalence_Time"
 manova.dir <- "ManovaRM"
-paths <- Sys.glob(file.path(dir, "*nSample10*noBatch_CancerCell*", manova.dir)) 
+paths <- Sys.glob(file.path(dir, "*nSample10_nCellType5_noBatch_CancerCell*", manova.dir)) 
 # files <- unlist(lapply(paths, function(path) list.files(path, pattern = "Manova_pValue_.*EffectSize-?[0-9.]+\\.rds", full.names = TRUE)))
 files <- unlist(lapply(paths, function(path) list.files(path, pattern = "Manova_pValue_", full.names = TRUE)))
 files <- files[!grepl("EffectSize", files)]

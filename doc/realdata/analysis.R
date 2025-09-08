@@ -1,7 +1,7 @@
 # Goal: This script is used to analyze scSTM from real data PD1
 # 1) compare assigned cluster from paper cluster
 # 2) changes between groups (time/expansion)
-setwd("/proj/milovelab/wu/scLDAseq")
+setwd("/proj/milovelab/wu/scSTMseq_WorkingDir")
 # setwd("/Users/Euphy/Desktop/Research/Single_Cell_Cancer/scLDAseq")
 library(Matrix)
 library(SingleCellExperiment)
@@ -16,7 +16,7 @@ sapply(r.file, source)
 select_top_scSTM <- function(scSTMobj) {
   if(class(scSTMobj) == "selectModel") {
     all_values <- unlist(scSTMobj$bound)
-    max_value <- max(all_values)
+    max_value <- max(all_values, na.rm = T)
     if(length(which(all_values == max_value)) > 1){
       max_position_in_vector <- which(all_values == max_value)[1]
     } else{
@@ -38,7 +38,7 @@ cluster_scSTM <- function(scSTMobj) {
 
 
 # scSTMobj <- readRDS("/work/users/e/u/euphyw/scLDAseq/data/PD1_data/PD1_scSTM/scSTM_Content_TimeandResponse_Prevalence_TimeandSample.rds")
-scSTMobj <- readRDS("/work/users/e/u/euphyw/scLDAseq/data/PD1_data/PD1_scSTM/scSTM_Content_BatchNoInteraction_Prevalence_TimeResponseInteraction.rds")
+scSTMobj <- readRDS("/users/e/u/euphyw/scSTMseq/data/PD1_data/PD1_scSTM/scSTM_Content_BatchNoInteraction_Prevalence_TimeResponseInteraction_nTopic4.rds")
 scSTMobj <- select_top_scSTM(scSTMobj)
 sims <- scSTMobj$settings$sce
 # calculate adjusted rand index
@@ -52,8 +52,8 @@ K <- length(unique(sims$cellType))
 r.file <- paste0("R/",list.files("R/"))
 sapply(r.file, source)
 
-png("res/PD1/structure_plot_Interaction.png", height = 2000, width = 4000, res = 300)
-structure_plot(scSTMobj, topics = 1:K, grouping = sims$cellType, n = 3000, gap = 10)
+png("res/PD1/structure_plot_Interaction_nGroup4.png", height = 2000, width = 4000, res = 300)
+structure_plot(scSTMobj, topics = 1:4, grouping = sims$cellType, n = 3000, gap = 10)
 dev.off()
 
 # time effect

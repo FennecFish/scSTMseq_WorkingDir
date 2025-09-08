@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --time=2:00:00
 #SBATCH --mem-per-cpu=8G
-#SBATCH --array=1-100
+#SBATCH --array=1-20
 #SBATCH --mail-type=all
 #SBATCH --mail-user=euphyw@live.unc.edu
 

@@ -1,10 +1,10 @@
 # this script is to run scSTMseq with filtered gene
 # without content
-setwd("/proj/milovelab/wu/scLDAseq")
+setwd("/proj/milovelab/wu/scSTMseq_WorkingDir")
+library(Rcpp)
 library(fastTopics)
 library(Matrix)
 library(scran)
-library(Rcpp)
 library(slam)
 library(SingleCellExperiment)
 library(ggplot2)

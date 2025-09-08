@@ -10115,3 +10115,329 @@ Completed iteration: 1
 
 Running iteration: 18 with init_type: TopicScore
 
+Completed iteration: 8
+
+Running iteration: 19 with init_type: TopicScore
+
+Completed iteration: 2
+
+Running iteration: 20 with init_type: TopicScore
+
+Completed iteration: 5
+
+Running iteration: 21 with init_type: TopicScore
+
+Completed iteration: 4
+
+Running iteration: 22 with init_type: TopicScore
+
+Completed iteration: 13
+
+Running iteration: 23 with init_type: TopicScore
+
+Completed iteration: 14
+
+Running iteration: 24 with init_type: TopicScore
+
+Completed iteration: 10
+
+Running iteration: 25 with init_type: TopicScore
+
+Completed iteration: 9
+
+Running iteration: 26 with init_type: TopicScore
+
+Completed iteration: 12
+
+Running iteration: 27 with init_type: TopicScore
+
+Completed iteration: 15
+
+Running iteration: 28 with init_type: TopicScore
+
+Completed iteration: 6
+
+Running iteration: 29 with init_type: TopicScore
+
+Completed iteration: 3
+
+Running iteration: 30 with init_type: TopicScore
+
+Completed iteration: 16
+
+Running iteration: 31 with init_type: Spectral
+
+Completed iteration: 17
+
+Running iteration: 32 with init_type: Random
+
+Completed iteration: 18
+
+Running iteration: 33 with init_type: Random
+
+Completed iteration: 31
+
+Running iteration: 34 with init_type: Random
+
+Completed iteration: 19
+
+Running iteration: 35 with init_type: Random
+
+Completed iteration: 25
+
+Running iteration: 36 with init_type: Random
+
+Completed iteration: 23
+
+Running iteration: 37 with init_type: Random
+
+Completed iteration: 20
+
+Running iteration: 38 with init_type: Random
+
+Completed iteration: 22
+
+Running iteration: 39 with init_type: Random
+
+Completed iteration: 27
+
+Running iteration: 40 with init_type: Random
+
+Completed iteration: 24
+
+Running iteration: 41 with init_type: Random
+
+Completed iteration: 26
+
+Running iteration: 42 with init_type: Random
+
+Completed iteration: 21
+
+Running iteration: 43 with init_type: Random
+
+Completed iteration: 28
+
+Running iteration: 44 with init_type: Random
+
+Completed iteration: 29
+
+Running iteration: 45 with init_type: Random
+
+Completed iteration: 30
+
+Running iteration: 46 with init_type: Random
+
+Completed iteration: 34
+
+Running iteration: 47 with init_type: Random
+
+Completed iteration: 32
+
+Running iteration: 48 with init_type: Random
+
+Completed iteration: 33
+
+Running iteration: 49 with init_type: Random
+
+Completed iteration: 46
+
+Running iteration: 50 with init_type: Random
+
+Completed iteration: 38
+
+Running iteration: 51 with init_type: Random
+
+Completed iteration: 36
+
+Running iteration: 52 with init_type: Random
+
+Completed iteration: 35
+
+Running iteration: 53 with init_type: Random
+
+Completed iteration: 37
+
+Running iteration: 54 with init_type: Random
+
+Completed iteration: 39
+
+Running iteration: 55 with init_type: Random
+
+Completed iteration: 42
+
+Running iteration: 56 with init_type: Random
+
+Completed iteration: 41
+
+Running iteration: 57 with init_type: Random
+
+Completed iteration: 40
+
+Running iteration: 58 with init_type: Random
+
+Completed iteration: 44
+
+Running iteration: 59 with init_type: Random
+
+Completed iteration: 47
+
+Running iteration: 60 with init_type: Random
+
+Completed iteration: 45
+
+Running iteration: 61 with init_type: Random
+
+Completed iteration: 43
+
+Completed iteration: 48
+
+Completed iteration: 49
+
+Completed iteration: 50
+
+Completed iteration: 53
+
+Completed iteration: 59
+
+Completed iteration: 52
+
+Completed iteration: 60
+
+Completed iteration: 61
+
+Completed iteration: 55
+
+Completed iteration: 57
+
+Completed iteration: 56
+
+Completed iteration: 58
+
+Completed iteration: 51
+
+Completed iteration: 54
+
+Running final iteration: 1 with init_type: TopicScore
+
+Running final iteration: 3 with init_type: TopicScore
+
+Running final iteration: 4 with init_type: TopicScore
+
+Running final iteration: 5 with init_type: TopicScore
+
+Running final iteration: 2 with init_type: TopicScore
+
+Completed final iteration: 1
+
+Completed final iteration: 3
+
+Completed final iteration: 4
+
+Completed final iteration: 2
+
+Completed final iteration: 5
+
+Warning messages:
+Warning messages:
+Warning messages:
+1: In value[[3L]](cond) :Warning messages:
+
+  Topic SCORE failure occurred; falling back to init.method == "random"
+Warning messages:
+2: 1: In value[[3L]](cond) :
+ In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+1: 
+ 3:  Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :Warning messages:
+
+ 2: In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+1: In value[[3L]](cond) :
+ Warning messages:
+
+  Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :1:  Topic SCORE failure occurred; falling back to init.method == "random"
+
+ In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+2: 1: 
+ In value[[3L]](cond) :Warning messages:
+ Topic SCORE failure occurred; falling back to init.method == "random"
+2: 
+ In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :
+ 
+ 2: Warning messages:
+ Topic SCORE failure occurred; falling back to init.method == "random"
+ Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :3: 
+ 1: Warning messages:
+ Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :2: In value[[3L]](cond) :
+ Warning messages:
+In value[[3L]](cond) :3:  Topic SCORE failure occurred; falling back to init.method == "random"
+
+ In value[[3L]](cond) :
+ Warning messages:
+ Topic SCORE failure occurred; falling back to init.method == "random"
+
+  Topic SCORE failure occurred; falling back to init.method == "random"
+ Topic SCORE failure occurred; falling back to init.method == "random"
+3: 2: Warning messages:
+1: In value[[3L]](cond) :In value[[3L]](cond) :
+ 1: 
+  Topic SCORE failure occurred; falling back to init.method == "random"
+1: 1:  Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :In value[[3L]](cond) :Warning message:
+In value[[3L]](cond) :
+ In value[[3L]](cond) :3: 
+ Warning messages:
+ Topic SCORE failure occurred; falling back to init.method == "random"
+1: 
+  Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :
+  Topic SCORE failure occurred; falling back to init.method == "random"
+Warning messages:
+
+  Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :1: 2: 2: 2:  Topic SCORE failure occurred; falling back to init.method == "random"
+
+ In value[[3L]](cond) :In value[[3L]](cond) :In value[[3L]](cond) :In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+2: In asMethod(object) :
+ 
+ 
+ 
+  Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+ Topic SCORE failure occurred; falling back to init.method == "random"
+
+  Topic SCORE failure occurred; falling back to init.method == "random"
+1: 2: 
+  sparse->dense coercion: allocating vector of size 2.4 GiB
+In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :2: 1: 
+ In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+
+ 
+ In value[[3L]](cond) : Topic SCORE failure occurred; falling back to init.method == "random"
+ Topic SCORE failure occurred; falling back to init.method == "random"
+
+  Topic SCORE failure occurred; falling back to init.method == "random"
+2: In value[[3L]](cond) :2: 
+  Topic SCORE failure occurred; falling back to init.method == "random"
+In value[[3L]](cond) :
+  Topic SCORE failure occurred; falling back to init.method == "random"
+rm: cannot remove '/work/appscr/r/euphyw/RtmpBivDUa/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34b737b8c018': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpfoVG5V/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34ba2ba9d5b3': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmplJXhHC/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34bd7982d054': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpN6OuN4/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34b9292f015b': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpW1A6Jf/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34bc3e733e39'rm: cannot remove '/work/appscr/r/euphyw/Rtmp8rOvdi/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34b471c5bf78'rm: cannot remove '/work/appscr/r/euphyw/Rtmp50Qc3p/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34b26049557a'rm: cannot remove '/work/appscr/r/euphyw/RtmpzFJcZU/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34bf30eebe18': Directory not emptyrm: 
+cannot remove '/work/appscr/r/euphyw/Rtmp9U9mXh/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34be1d3c0aa7': Directory not empty
+: Directory not empty
+: Directory not empty
+: Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpXN1bQT/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34bb35f78837': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpUArgjw/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34b367262cd3': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpLv4pKj/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34b63f18af21': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpHE4s4W/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34b84bbb6cd4': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/Rtmpoj8AvD/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34b52ef9f948': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpeVTBXZ/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34c012d14888': Directory not empty
+rm: cannot remove '/work/appscr/r/euphyw/RtmpGUcPia/sourceCpp-x86_64-pc-linux-gnu-1.0.13/sourcecpp_3b34722513505e': Directory not empty

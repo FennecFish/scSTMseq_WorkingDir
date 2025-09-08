@@ -1,4 +1,4 @@
-setwd("/proj/milovelab/wu/scLDAseq")
+setwd("/proj/milovelab/wu/scSTMseq_WorkingDir")
 library(Matrix)
 library(SingleCellExperiment)
 library(ggplot2)

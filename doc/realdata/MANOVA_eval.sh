@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name=PD1_effectSize
-#SBATCH --output=PD1_effectSize.out
-#SBATCH --error=PD1_effectSize.err
+#SBATCH --job-name=PD1_n4
+#SBATCH --output=PD1_n4.out
+#SBATCH --error=PD1_n4.err
 #SBATCH -n 1
 #SBATCH --time=1-
 #SBATCH --mem=20g

@@ -1,4 +1,4 @@
-setwd("/proj/milovelab/wu/scLDAseq")
+setwd("/proj/milovelab/wu/scSTMseq_WorkingDir")
 library(Matrix)
 library(SingleCellExperiment)
 library(ggplot2)
@@ -11,7 +11,9 @@ library(tidyverse)
 library(MANOVA.RM)
 library(limma)
 source("R/useful_functions.R")
-scSTMobj <- readRDS("/work/users/e/u/euphyw/scLDAseq/data/PD1_data/PD1_scSTM/scSTM_Content_BatchNoInteraction_Prevalence_TimeResponseInteraction.rds")
+K <- 4
+scSTMobj <- readRDS(paste0("/users/e/u/euphyw/scSTMseq/data/PD1_data/PD1_scSTM/scSTM_Content_BatchNoInteraction_Prevalence_TimeResponseInteraction_nTopic", 
+                           K, ".rds"))
 scSTMobj <- select_top_scSTM(scSTMobj)
 nsims <- 1000
 #########################################
@@ -50,13 +52,13 @@ collapsed.theta <- lapply(SimEta, function(x){
   
   return(theta.new)
 })
-saveRDS(collapsed.theta, file = "res/PD1/collaposed_theta.rds")
+saveRDS(collapsed.theta, file = paste0("res/PD1/collaposed_theta_nTopics", K, ".rds"))
 
 #########################################
 ## Step 3b: MANOVA + Repeated Measure
 #########################################
 # fit a manova model
-collapsed.theta <- readRDS("res/PD1/collaposed_theta.rds")
+collapsed.theta <- readRDS(paste0("res/PD1/collaposed_theta_nTopics", K, ".rds"))
 manova.fit <- lapply(collapsed.theta, function(x){
   Y <- x %>% 
     dplyr::select(starts_with("V"))
@@ -95,5 +97,5 @@ manova.fit <- lapply(collapsed.theta, function(x){
   return(MANOVA.RM.res)
 })
 
-saveRDS(manova.fit, file = "res/PD1/Manova_Res.rds")
+saveRDS(manova.fit, file = paste0("res/PD1/Manova_Res_nTopics", K, ".rds"))
 

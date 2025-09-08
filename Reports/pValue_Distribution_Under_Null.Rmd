@@ -1,0 +1,176 @@
+---
+title: "pValue_Distribution_Under_Null"
+output: html_document
+date: "2024-11-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this illustration, I will demonstrate the following simulation:
+
+<!-- 1) All samples have the same baseline cell type proportion, and experience no cell type proportion changes (no sample variations). 50 replicates of simulations with different seeds were generated -->
+All samples have different baseline cell type proportion, and experience no cell type proportion changes (with sample variations). 1000 replicates of simulations with different seeds were generated.
+
+For each simulation, we simulated 20 samples, 5 cell types and 2 timepoints. Each timepoints have 250 cells per sample, with each sample has a total of 500 cells and 3000 genes. 
+
+This demonstration aims to show the p-value distribution under the null. For both simulation scenarios, I will present p-values from `MANOVA.RM` fitting two types of datasets
+1) the collapsed cell type proportion by sample post topic modeling
+2) the simulated true value directly
+
+```{r, warning=FALSE, message=FALSE}
+library(MASS)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(SingleCellExperiment)
+library(MANOVA.RM)
+library(tibble)
+library(tidyverse)
+```
+
+## Simulation With Sample Variations
+In this simulation, 1000 simulations with different seeds under the null (no cell type proportion changes) were generated. For each simulation, the data represents 20 samples, with different baseline cell type proportion. For simplicity, only 5 cell types are simulated. 
+
+### Distribution on Simulated Cells
+We first assess distribution of p-values under the null, by fitting `MANOVA.RM` directly on the simulated cell types. By doing this step, I want to see if the data generated prior to topic modelings would follow the uniform distribution using the test.
+
+I am displaying an example dataset below, and how MANOVA is fitted on this dataset.
+```{r}
+dir <- "/work/users/e/u/euphyw/scLDAseq/data/simulation/1MultiSample/SingleResponse/nSample20_nCellType5_noBatch_StromalCell/1000sims"
+files <- list.files(path = dir, pattern = "Null")
+file_name <- files[1]
+
+sims <- readRDS(paste0(dir, "/", file_name))
+
+# collapse simulate cells by their group and sample
+theta.collapsed <- colData(sims) %>%
+  as.data.frame() %>%
+  group_by(Time, Sample, Group) %>%
+  summarise(count = n(), .groups = 'drop') %>%
+  group_by(Time, Sample) %>%
+  mutate(proportion = count / sum(count)) %>%
+  ungroup() %>%
+  dplyr::select(-count) %>%
+  pivot_wider(names_from = Group, values_from = proportion, values_fill = 0)
+
+theta.collapsed %>% arrange(Sample)
+
+##### Fit Manova.RM #######
+response_vars <- grep("^Group", colnames(theta.collapsed), value = TRUE)
+as.formula(paste0("cbind(", paste(response_vars, collapse = ", "), ") ~ Time"))
+fit <- multRM(as.formula(paste0("cbind(", paste(response_vars, collapse = ", "), ") ~ Time")),
+                 data = theta.collapsed, subject = "Sample", within = "Time", iter = 1000)
+summary(fit)
+```
+Since the covariance matrix is singular, we only use MATS statistics for this analysis on simulated data. We can see that the p-value under the null using `MANOVA.RM` directly on the simulated data (pre-clustering) does follow uniform distribution.
+
+```{r, warning=FALSE}
+pValue <- readRDS("/proj/milovelab/wu/scLDAseq/res/1MultiSample_SingleResponse_Simulation/sims1000_Manova_pValue_Null_nSample20_nCellType5_noBatch_StromalCell.rds")
+pValue <- as.numeric(do.call(rbind, pValue))
+hist(pValue, main = "Distribution of MATS pValues under the Null with Simulated Data", breaks = 20)
+```
+
+### Distribution on Posterior Replicates post Topic Modeling
+We then assess p-value distribution under the null, post topic modeling, which add complexity to the procedure. By fitting MANOVA on the post-topic modeling datasets, we no longer observe singular covariance matrix, so both MATS and WTS will be reported.
+
+First we plot p-Values across ALL replicates. We do observe a relative uniform distribution using all replicates (a total of 1000 $\times$ 100 p-values)
+```{r}
+pValue <- readRDS("/proj/milovelab/wu/scLDAseq/res/1MultiSample_SingleResponse_Simulation/1000ManovaTheta_Pooled_noContent_Prevalence_Time.rds")
+pValue <- pValue[grep("NullModel",names(pValue))]
+rep <- do.call(rbind, pValue)
+rep_long <- pivot_longer(rep, cols = everything(), names_to = "methods", values_to = "pValue")
+ggplot(rep_long, aes(x = pValue)) +
+  geom_histogram(breaks = seq(0, 1, by = 0.05), color = "black", aes(fill = methods)) +
+  facet_wrap(~ methods) +
+  theme_minimal() +
+  labs(x = "p-value", y = "Frequency", title = "Histogram of p-values under the null across all replicates") +
+  scale_fill_manual(values = c("pValue.wts" = "skyblue", "pValue.mats" = "coral"))
+```
+
+Then we pick the medium of the pValue of 100 replicates within each simulation, and re-plot the distribution. I do not observe significant effect on the distribution due to the medium.
+```{r}
+manova.pValue <- lapply(pValue, function(x) {
+  data.frame(wts =quantile(x$pValue.wts, probs = 0.50),
+             mats = quantile(x$pValue.mats, probs = 0.50))
+})
+manova.pValue <- do.call(rbind, manova.pValue)
+manova.pValue.long <- pivot_longer(manova.pValue, cols = everything(), names_to = "methods", values_to = "pValue")
+
+ggplot(manova.pValue.long, aes(x = pValue)) +
+  geom_histogram(breaks = seq(0, 1, by = 0.05), color = "black", aes(fill = methods)) +
+  facet_wrap(~ methods) +
+  theme_minimal() +
+  labs(x = "p-value", y = "Frequency", title = "Histogram of p-values under the null across medium of replicates") +
+  scale_fill_manual(values = c("wts" = "skyblue", "mats" = "coral"))
+```
+
+QQ plots can also be used to examined if distribution is uniformly distributed.
+```{r}
+pValue.wts.medium <- sort(manova.pValue$wts)
+pValue.mats.medium <- sort(manova.pValue$mats)
+theoretical_quantiles <- qunif(ppoints(length(pValue.wts.medium)))
+
+qqplot(theoretical_quantiles, pValue.wts.medium, main = "QQ-Plot of P-values with WTS vs Uniform(0,1)",
+       xlab = "Uniform(0,1)", ylab = "Medium WTS pValue")
+abline(0, 1, col = "red")  
+
+qqplot(theoretical_quantiles, pValue.mats.medium, main = "QQ-Plot of P-values with MATS vs Uniform(0,1)",
+       xlab = "Uniform(0,1)", ylab = "Medium MATS pValue")
+abline(0, 1, col = "red")  
+
+```
+
+Additionally, I also plotted 75th quantile, as it was another method recommended in Scott's paper. Similar to medium, we do not observe a significant change in the distribution.
+```{r}
+manova.pValue <- lapply(pValue, function(x) {
+  data.frame(wts =quantile(x$pValue.wts, probs = 0.75),
+             mats = quantile(x$pValue.mats, probs = 0.75))
+})
+manova.pValue <- do.call(rbind, manova.pValue)
+manova.pValue.long <- pivot_longer(manova.pValue, cols = everything(), names_to = "methods", values_to = "pValue")
+ggplot(manova.pValue.long, aes(x = pValue)) +
+  geom_histogram(breaks = seq(0, 1, by = 0.05), color = "black", aes(fill = methods)) +
+  facet_wrap(~ methods) +
+  theme_minimal() +
+  labs(x = "p-value", y = "Frequency", title = "Histogram of p-values under the null across 75th quantile of replicates") +
+  scale_fill_manual(values = c("wts" = "skyblue", "mats" = "coral"))
+pValue.wts.medium <- sort(manova.pValue$wts)
+pValue.mats.medium <- sort(manova.pValue$mats)
+theoretical_quantiles <- qunif(ppoints(length(pValue.wts.medium)))
+
+qqplot(theoretical_quantiles, pValue.wts.medium, main = "QQ-Plot of P-values with WTS vs Uniform(0,1)",
+       xlab = "Uniform(0,1)", ylab = "75th WTS pValue")
+abline(0, 1, col = "red")  
+
+qqplot(theoretical_quantiles, pValue.mats.medium, main = "QQ-Plot of P-values with MATS vs Uniform(0,1)",
+       xlab = "Uniform(0,1)", ylab = "75th MATS pValue")
+abline(0, 1, col = "red") 
+```
+
+### TypeI Error
+Since all models are simulated under the null, we can measure the Type I error by calculating the number of rejections of the null. We can see that both MATS and WTS are performing at or under the threshold, which is our desired results.
+```{r}
+threshold <- c(0.01, 0.05, 0.1)
+topic_plot <- readRDS("/proj/milovelab/wu/scLDAseq/res/1MultiSample_SingleResponse_Simulation/1000sims_TypeIError.rds")
+ggplot(topic_plot, aes(x = Threshold, y = TypeIError, color = Methods, group = Methods)) +
+  geom_point(size = 3) +
+  geom_hline(yintercept = c(0.01, 0.05, 0.1), linetype = "dashed", color = "red") +
+  labs(title = "Type I Error for Single Response Simulation with No Batch Effect and Stromal Cells only",
+       subtitle = "Time Variable Included with Pooled Gamma Model",
+       x = "Threshold",
+       y = "Type I Error") +
+  theme_bw() +
+  scale_x_continuous(breaks = threshold) +  # Ensure proper thresholds on X axis
+  theme(
+    plot.title = element_text(size = 18, hjust = 0.5),  # Increase title text size
+    axis.title.x = element_text(size = 16),  # Increase X axis title size
+    axis.title.y = element_text(size = 16),  # Increase Y axis title size
+    axis.text.x = element_text(size = 14),   # Increase X axis labels size
+    axis.text.y = element_text(size = 14)   # Increase Y axis labels size
+  )
+
+```
+
+
