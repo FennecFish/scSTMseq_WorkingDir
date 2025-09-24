@@ -1,3 +1,0 @@
-Array Job ID	Computing Time
-52498463	10:11:32
-52498463	20:12:06

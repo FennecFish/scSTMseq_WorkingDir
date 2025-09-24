@@ -1,8 +1,0 @@
-[core]
-	repositoryformatversion = 0
-	filemode = true
-	bare = true
-[remote "origin"]
-	url = https://github.com/FennecFish/scLDAseq.git
-	fetch = +refs/*:refs/*
-	mirror = true
